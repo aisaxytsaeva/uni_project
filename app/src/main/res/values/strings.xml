@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">uni_project</string>
+    <string name="app_name">DriveNext</string>
+    <string name="splashscreen_text">Поможем найти твою следующую поездку</string>
+
+    <string name="no_internet">Повторить попытку</string>
+
+    <string name="greet1">Аренда автомобилей</string>
+    <string name="greet_d1">Открой для себя удобный и доступный способ передвижения</string>
+    <string name="greet2">Безопасно и удобно</string>
+    <string name="greet_d2">Арендуй автомобиль и наслождайся его удобством</string>
+    <string name="greet3">Лучшие предложения</string>
+    <string name="greet_d3">Выбирай понравившиеся среди сотен доступных автомобилей</string>
 </resources>
