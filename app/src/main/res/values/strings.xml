@@ -10,4 +10,10 @@
     <string name="greet_d2">Арендуй автомобиль и наслождайся его удобством</string>
     <string name="greet3">Лучшие предложения</string>
     <string name="greet_d3">Выбирай понравившиеся среди сотен доступных автомобилей</string>
+    <string name="skip">Пропустить</string>
+    <string name="go">Поехали</string>
+    <string name="cont">Далее</string>
+
+    <string name="autorization">Войти</string>
+    <string name="registration">Зарегистривроваться</string>
 </resources>

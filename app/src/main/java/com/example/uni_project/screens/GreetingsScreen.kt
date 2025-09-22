@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.uni_project.R
 import com.example.uni_project.core.viewmodel.OnboardingViewModel
 import com.example.uni_project.screens.components.OnboardingSlideItem
 
@@ -40,7 +42,7 @@ fun Greetings(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Пропустить",
+                    text = stringResource(R.string.skip),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp
                 )
@@ -57,7 +59,6 @@ fun Greetings(
             repeat(viewModel.slides.size) { index ->
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
                         .padding(4.dp)
                         .background(
                             color = if (index == currentPage) {
@@ -84,10 +85,10 @@ fun Greetings(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 24.dp)
                 .fillMaxWidth(0.8f)
-                .height(56.dp)
+
         ) {
             Text(
-                text = if (viewModel.isLastPage) "Поехали" else "Далее",
+                text = if (viewModel.isLastPage) stringResource(R.string.go) else stringResource(R.string.cont),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
