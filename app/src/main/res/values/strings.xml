@@ -1,9 +1,14 @@
 <resources>
+    //splashscreen
     <string name="app_name">DriveNext</string>
     <string name="splashscreen_text">Поможем найти твою следующую поездку</string>
 
-    <string name="no_internet">Повторить попытку</string>
+    //no_internet
+    <string name="no_internet">Нет подключение к интернету</string>
+    <string name="no_int_des">Проверьте подключение и повторите попытку</string>
+    <string name="reload">Повторить попытку</string>
 
+    //onboarding
     <string name="greet1">Аренда автомобилей</string>
     <string name="greet_d1">Открой для себя удобный и доступный способ передвижения</string>
     <string name="greet2">Безопасно и удобно</string>
@@ -12,8 +17,17 @@
     <string name="greet_d3">Выбирай понравившиеся среди сотен доступных автомобилей</string>
     <string name="skip">Пропустить</string>
     <string name="go">Поехали</string>
-    <string name="cont">Далее</string>
 
+    //getting_started
     <string name="autorization">Войти</string>
     <string name="registration">Зарегистривроваться</string>
+
+
+    //congrats
+    <string name="name_congrats">Пользуйтесь с удовлольствием</string>
+    <string name="congrats">Поздравляем</string>
+    <string name="congrast_des">Вы успешно зарегистрировались. Обработка ваших персональных данных займет около двух часов. Спасибо за ожидание</string>
+
+    //common
+    <string name="cont">Далее</string>
 </resources>

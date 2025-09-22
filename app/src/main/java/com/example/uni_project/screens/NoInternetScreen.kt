@@ -42,7 +42,7 @@ fun NoInternetScreen(
                 modifier = Modifier.size(240.dp),
             )
             Text(
-                text = "Нет подключение к интернету",
+                text = stringResource(R.string.no_internet),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
@@ -50,7 +50,7 @@ fun NoInternetScreen(
             )
 
             Text(
-                text = "Проверьте подключение и повторите попытку",
+                text = stringResource(R.string.no_int_des),
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
@@ -70,7 +70,7 @@ fun NoInternetScreen(
                 )
             ) {
                 Text(
-                    text = stringResource(R.string.no_internet),
+                    text = stringResource(R.string.reload),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
