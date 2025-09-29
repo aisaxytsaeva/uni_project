@@ -1,4 +1,4 @@
-package com.example.uni_project.screens.components
+package com.example.uni_project.presentation.screens.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import com.example.uni_project.core.viewmodel.OnboardingSlide
+import com.example.uni_project.core.data_class.OnboardingSlide
 
 @Composable
 fun OnboardingSlideItem(

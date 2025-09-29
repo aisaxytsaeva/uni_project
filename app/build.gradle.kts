@@ -66,6 +66,39 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.material.icons.core)
+    implementation(libs.material.icons.extended)
+
+    implementation(libs.accompanist.permissions)
+    implementation(libs.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+    implementation(libs.coil.compose)
+
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.security.crypto)
+
+
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.play.services)
+
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.androidx.ui.text)
+    implementation(libs.material3)
+    implementation(libs.protolite.well.known.types)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.ui)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.foundation.layout)
+    ksp(libs.room.compiler)
+    implementation(libs.play.services.auth)
+
 
 
     testImplementation(libs.junit)

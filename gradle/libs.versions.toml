@@ -18,6 +18,24 @@ benchmarkTraceprocessor = "1.4.1"
 foundation = "1.9.1"
 material3 = "1.3.2"
 foundationLayout = "1.9.1"
+lifecycle = "2.6.2"
+security-crypto = "1.1.0-alpha06"
+room = "2.7.1"
+uiTextVersion = "1.9.2"
+material3Version = "1.4.0"
+play-services-auth = "20.7.0"
+protoliteWellKnownTypes = "18.0.1"
+material-icons-extended = "1.5.4"
+coroutines = "1.7.3"
+lifecycleViewmodelKtx = "2.9.4"
+runtime = "1.9.2"
+uiVersion = "1.9.2"
+foundationVersion = "1.9.2"
+cameraX = "1.4.2"
+accompanist = "0.34.0"
+coil = "2.5.0"
+foundationLayoutVersion = "1.9.2"
+
 
 
 [libraries]
@@ -44,7 +62,35 @@ androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benc
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
-
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata"}
+androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiTextVersion" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "play-services-auth" }
+protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
+material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "material-icons-extended" }
+material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons-extended" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "cameraX" }
+camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraX" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraX" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraX" }
+camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraX" }
+camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraX" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 
 
 [plugins]
