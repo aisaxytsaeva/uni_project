@@ -1,4 +1,4 @@
-package com.example.uni_project.screens
+package com.example.uni_project.presentation.screens
 
 
 import androidx.compose.foundation.background
@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.R
-import com.example.uni_project.core.viewmodel.OnboardingViewModel
-import com.example.uni_project.screens.components.OnboardingSlideItem
+import com.example.uni_project.presentation.viewmodel.OnboardingViewModel
+import com.example.uni_project.presentation.screens.components.OnboardingSlideItem
 
 @Composable
 fun Greetings(

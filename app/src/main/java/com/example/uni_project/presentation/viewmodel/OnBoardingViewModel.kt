@@ -1,15 +1,11 @@
-package com.example.uni_project.core.viewmodel
+package com.example.uni_project.presentation.viewmodel
 
 import androidx.compose.runtime.IntState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import com.example.uni_project.R
+import com.example.uni_project.core.data_class.OnboardingSlide
 
-data class OnboardingSlide(
-    val imageRes: Int,
-    val title: Int,
-    val description: Int
-)
 
 // ViewModel для управления состоянием
 class OnboardingViewModel : ViewModel() {
@@ -20,7 +16,7 @@ class OnboardingViewModel : ViewModel() {
         OnboardingSlide(
             imageRes = R.drawable.greet1,
             title = R.string.greet1,
-            description =R.string.greet_d1
+            description = R.string.greet_d1
         ),
         OnboardingSlide(
             imageRes = R.drawable.greet2,

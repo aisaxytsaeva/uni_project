@@ -18,16 +18,34 @@
     <string name="skip">Пропустить</string>
     <string name="go">Поехали</string>
 
-    //getting_started
-    <string name="autorization">Войти</string>
-    <string name="registration">Зарегистривроваться</string>
+
+    
+    //autorization
+    <string name="sign_in">Войдите в аккаунт</string>
+    <string name="sign_in_des">Пожалуйста, введите свои данные</string>
+    <string name="sign_in_">Войти</string>
+    <string name="sign_in_g">Войти через Google</string>
+
+
+    <string name="registration_title">Создать аккаунта</string>
+    <string name="confirm_password_hint">Повторите пароль</string>
+    <string name="terms_agreement">Я соглашаюсь с условиями обслуживания и политикой конфиденциальности</string>
 
 
     //congrats
     <string name="name_congrats">Пользуйтесь с удовлольствием</string>
     <string name="congrats">Поздравляем</string>
     <string name="congrast_des">Вы успешно зарегистрировались. Обработка ваших персональных данных займет около двух часов. Спасибо за ожидание</string>
+    <string name="forgotten_password"> Завбыли пароль?</string>
+
 
     //common
     <string name="cont">Далее</string>
+    <string name="mail">Электронная почта</string>
+    <string name="mail_sign"> Введите электронную почту</string>
+    <string name="password">Пароль</string>
+    <string name="password_sign">Введите пароль</string>
+    <string name="autorization">Войти</string>
+    <string name="registration">Зарегистривроваться</string>
+
 </resources>

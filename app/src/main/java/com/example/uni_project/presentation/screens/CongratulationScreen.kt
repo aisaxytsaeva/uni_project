@@ -1,4 +1,4 @@
-package com.example.uni_project.screens
+package com.example.uni_project.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
