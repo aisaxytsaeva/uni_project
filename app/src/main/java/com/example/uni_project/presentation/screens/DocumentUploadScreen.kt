@@ -26,13 +26,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.dao.AppDatabase
 import com.example.uni_project.core.data_class.RegistrationResult
+import com.example.uni_project.image_choose.rememberImagePicker
 import com.example.uni_project.presentation.viewmodel.DocumentUploadViewModel
 import com.example.uni_project.presentation.viewmodel.factory.DocumentUploadViewModelFactory
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentUploadScreen(
     email: String,
@@ -48,7 +51,6 @@ fun DocumentUploadScreen(
         AuthRepositoryImpl(
             AppDatabase.getInstance(context),
             GoogleAuthService(context),
-
         )
     }
 
@@ -58,6 +60,19 @@ fun DocumentUploadScreen(
 
     val state by viewModel.state.collectAsState()
     val registrationResult by viewModel.registrationResult.collectAsState()
+
+    // Контроллеры для выбора изображений
+    val profilePhotoPicker = rememberImagePicker { uri ->
+        viewModel.updateProfilePhoto(uri.toString())
+    }
+
+    val driverLicensePhotoPicker = rememberImagePicker { uri ->
+        viewModel.updateDriverLicensePhoto(uri.toString())
+    }
+
+    val passportPhotoPicker = rememberImagePicker { uri ->
+        viewModel.updatePassportPhoto(uri.toString())
+    }
 
     LaunchedEffect(Unit) {
         viewModel.clearErrors()
@@ -105,14 +120,6 @@ fun DocumentUploadScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Индикатор прогресса
-                Text(
-                    text = "Шаг 3 из 3",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
                 Text(
                     text = "Документы",
                     style = MaterialTheme.typography.headlineLarge,
@@ -140,7 +147,7 @@ fun DocumentUploadScreen(
                     modifier = Modifier
                         .size(120.dp)
                         .clickable {
-                            // TODO: Открыть галерею/камеру для выбора фото
+                            profilePhotoPicker.showImagePicker()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -244,8 +251,7 @@ fun DocumentUploadScreen(
                     isUploaded = state.driverLicensePhotoUri != null,
                     error = state.driverLicensePhotoError,
                     onUploadClick = {
-                        // TODO: Открыть галерею/камеру
-                        viewModel.updateDriverLicensePhoto("uri_to_driver_license_photo")
+                        driverLicensePhotoPicker.showImagePicker()
                     }
                 )
 
@@ -257,8 +263,7 @@ fun DocumentUploadScreen(
                     isUploaded = state.passportPhotoUri != null,
                     error = state.passportPhotoError,
                     onUploadClick = {
-                        // TODO: Открыть галерею/камеру
-                        viewModel.updatePassportPhoto("uri_to_passport_photo")
+                        passportPhotoPicker.showImagePicker()
                     }
                 )
 
@@ -305,8 +310,6 @@ fun DocumentUploadScreen(
             }
         }
     }
-
-
 }
 
 @Composable
