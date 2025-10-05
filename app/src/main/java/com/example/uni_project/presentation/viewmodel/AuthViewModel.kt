@@ -4,7 +4,7 @@ package com.example.uni_project.presentation.viewmodel
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.LoginResult
 import com.example.uni_project.core.data_class.LoginState
 import androidx.lifecycle.viewModelScope

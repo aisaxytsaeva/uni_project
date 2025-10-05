@@ -4,7 +4,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,24 +17,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.presentation.viewmodel.AuthViewModel
 import com.example.uni_project.presentation.viewmodel.factory.AuthViewModelFactory
 import com.example.uni_project.R
 import com.example.uni_project.core.data_class.GoogleSignInEvent
+import com.example.uni_project.ui.theme.Purple
 
 @Composable
 fun AuthorizationScreen(
     onAuthorization: () -> Unit,
     onRegistration: () -> Unit,
-    modifier: Modifier = Modifier
+
 ) {
     val context = LocalContext.current
     val viewModel: AuthViewModel = viewModel(
@@ -41,7 +48,6 @@ fun AuthorizationScreen(
     val state by viewModel.loginState.collectAsState()
     val focusManager = LocalFocusManager.current
 
-    // Обработка результата Google Sign-In
     val authResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -49,7 +55,7 @@ fun AuthorizationScreen(
         }
     )
 
-    // Обработка событий Google Sign-In
+
     LaunchedEffect(Unit) {
         viewModel.googleSignInEvent.collect { event ->
             when (event) {
@@ -82,13 +88,16 @@ fun AuthorizationScreen(
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
-            // Заголовок
             Text(
                 text = stringResource(R.string.sign_in),
                 style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+                    .padding(top = 100.dp)
+
             )
 
             Text(
@@ -97,19 +106,44 @@ fun AuthorizationScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
 
-            // Поля ввода
+
+            Text(
+                text = stringResource(R.string.mail),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(top = 150.dp)
+            )
+
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { viewModel.updateEmail(it) },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text(stringResource(R.string.mail_sign)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 0.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.password),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(top = 32.dp)
             )
 
             OutlinedTextField(
                 value = state.password,
                 onValueChange = { viewModel.updatePassword(it) },
-                label = { Text(stringResource(R.string.password)) },
+                label = { Text(stringResource(R.string.password_sign)) },
                 visualTransformation = if (state.isPasswordVisible) {
                     VisualTransformation.None
                 } else {
@@ -125,10 +159,9 @@ fun AuthorizationScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 0.dp)
             )
 
-            // Сообщение об ошибке
             state.error?.let { error ->
                 Text(
                     text = error,
@@ -136,6 +169,23 @@ fun AuthorizationScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
+            TextButton(
+                onClick = onRegistration,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Purple
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.forgotten_password),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
 
             Button(
                 onClick = {
@@ -146,7 +196,8 @@ fun AuthorizationScreen(
                 enabled = viewModel.isFormValid && !state.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
@@ -154,8 +205,8 @@ fun AuthorizationScreen(
                     Text(stringResource(R.string.sign_in_))
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
 
-            // Кнопка входа через Google
             OutlinedButton(
                 onClick = {
                     viewModel.prepareGoogleSignIn()
@@ -163,7 +214,8 @@ fun AuthorizationScreen(
                 enabled = !state.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Row {
 
@@ -172,12 +224,32 @@ fun AuthorizationScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            // Кнопка регистрации
-            TextButton(onClick = onRegistration) {
-                Text(stringResource(R.string.registration))
+            TextButton(
+                onClick = onRegistration,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Purple
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.registration),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Auto(){
+    AuthorizationScreen(
+        onAuthorization = {},
+        onRegistration = {}
+    )
 }

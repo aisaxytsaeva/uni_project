@@ -7,7 +7,6 @@ import com.example.uni_project.R
 import com.example.uni_project.core.data_class.OnboardingSlide
 
 
-// ViewModel для управления состоянием
 class OnboardingViewModel : ViewModel() {
     private val _currentPage = mutableIntStateOf(0)
     val currentPage: IntState = _currentPage

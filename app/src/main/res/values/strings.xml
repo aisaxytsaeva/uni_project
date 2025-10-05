@@ -4,7 +4,7 @@
     <string name="splashscreen_text">Поможем найти твою следующую поездку</string>
 
     //no_internet
-    <string name="no_internet">Нет подключение к интернету</string>
+    <string name="no_internet">Нет подключения к интернету</string>
     <string name="no_int_des">Проверьте подключение и повторите попытку</string>
     <string name="reload">Повторить попытку</string>
 
@@ -25,7 +25,7 @@
     <string name="sign_in_des">Пожалуйста, введите свои данные</string>
     <string name="sign_in_">Войти</string>
     <string name="sign_in_g">Войти через Google</string>
-
+    <string name="forgotten_password"> Забыли пароль?</string>
 
     <string name="registration_title">Создать аккаунта</string>
     <string name="confirm_password_hint">Повторите пароль</string>
@@ -36,7 +36,7 @@
     <string name="name_congrats">Пользуйтесь с удовлольствием</string>
     <string name="congrats">Поздравляем</string>
     <string name="congrast_des">Вы успешно зарегистрировались. Обработка ваших персональных данных займет около двух часов. Спасибо за ожидание</string>
-    <string name="forgotten_password"> Завбыли пароль?</string>
+
 
 
     //common
@@ -46,6 +46,6 @@
     <string name="password">Пароль</string>
     <string name="password_sign">Введите пароль</string>
     <string name="autorization">Войти</string>
-    <string name="registration">Зарегистривроваться</string>
+    <string name="registration">Зарегистрироваться</string>
 
 </resources>

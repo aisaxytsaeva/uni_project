@@ -2,7 +2,7 @@ package com.example.uni_project.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.uni_project.dao.UserEntity
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.RegistrationResult
 import com.example.uni_project.core.data_class.RegistrationState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -171,7 +171,7 @@ class RegistrationViewModel(
         _registrationResult.value = null
     }
 
-    // Метод для отладки - получение всех пользователей из БД
+
     suspend fun debugGetAllUsers(): List<UserEntity> {
         return try {
             authRepository.getAllUsers()

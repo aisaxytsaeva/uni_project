@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
@@ -155,7 +156,7 @@ fun DocumentUploadScreen(
                     if (state.profilePhotoUri != null) {
                         // Показать выбранное фото
                         Image(
-                            painter = rememberImagePainter(state.profilePhotoUri),
+                            painter = rememberAsyncImagePainter(state.profilePhotoUri),
                             contentDescription = "Фото профиля",
                             modifier = Modifier
                                 .fillMaxSize()

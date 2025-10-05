@@ -16,7 +16,7 @@ class GoogleAuthService(private val context: Context) {
     private val googleSignInClient: GoogleSignInClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
-            .requestIdToken("your_web_client_id_here") // Замените на реальный ID
+            .requestIdToken("00")
             .build()
         GoogleSignIn.getClient(context, gso)
     }

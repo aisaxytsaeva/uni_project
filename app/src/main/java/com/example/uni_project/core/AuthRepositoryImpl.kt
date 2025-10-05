@@ -6,7 +6,7 @@ import android.content.Intent
 import com.example.uni_project.dao.AppDatabase
 import com.example.uni_project.dao.AuthProvider
 import com.example.uni_project.dao.UserEntity
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.example.uni_project.core.data_class.Gender
@@ -25,7 +25,6 @@ class AuthRepositoryImpl(
         return try {
             val user = database.userDao().getUserByEmail(email)
             if (user != null && user.password == password.hashCode().toString()) {
-                // Генерируем новый токен при входе
                 val newToken = generateToken()
                 database.userDao().updateUserToken(email, newToken)
                 currentUserToken = newToken
@@ -51,12 +50,12 @@ class AuthRepositoryImpl(
     // Трехэтапная регистрация
     override suspend fun registerStep1(email: String, password: String): LoginResult {
         return try {
-            // Проверяем, не зарегистрирован ли уже email
+
             if (isEmailRegistered(email)) {
                 return LoginResult(success = false, error = "Пользователь с таким email уже существует")
             }
 
-            // Создаем пользователя с первым шагом регистрации
+
             val newUser = UserEntity(
                 email = email,
                 password = password.hashCode().toString(),
@@ -256,11 +255,11 @@ class AuthRepositoryImpl(
     private suspend fun findOrCreateUserFromGoogleAccount(account: GoogleSignInAccount): UserEntity {
         val userEmail = account.email ?: throw IllegalArgumentException("Email is required")
 
-        // Ищем пользователя в базе данных по email
+
         val existingUser = getUserByEmail(userEmail)
 
         return if (existingUser != null) {
-            // Пользователь существует - обновляем токен и время входа
+
             val newToken = generateToken()
             val updatedUser = existingUser.copy(
                 token = newToken,
@@ -272,10 +271,10 @@ class AuthRepositoryImpl(
             updateUser(updatedUser)
             updatedUser
         } else {
-            // Создаем нового пользователя
+
             val newUser = UserEntity(
                 email = userEmail,
-                password = "", // Пароль не нужен для Google аутентификации
+                password = "",
                 firstName = account.givenName ?: "",
                 lastName = account.familyName ?: "",
                 middleName = "",
@@ -290,7 +289,7 @@ class AuthRepositoryImpl(
                 createdAt = System.currentTimeMillis(),
                 lastLogin = System.currentTimeMillis(),
                 authProvider = AuthProvider.GOOGLE,
-                registrationStep = 3 // Пропускаем шаги регистрации для Google
+                registrationStep = 3
             )
             insertUser(newUser)
             newUser

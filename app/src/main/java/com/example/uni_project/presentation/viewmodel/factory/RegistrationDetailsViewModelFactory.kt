@@ -6,18 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.dao.AppDatabase
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.presentation.viewmodel.RegistrationDetailsViewModel
 
-class RegistrationDetailsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class RegistrationDetailsViewModelFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RegistrationDetailsViewModel::class.java)) {
-            val database = AppDatabase.getInstance(context)
-            val googleAuthService = GoogleAuthService(context)
-            val authRepository: AuthRepository =
-                AuthRepositoryImpl(database, googleAuthService, context)
             return RegistrationDetailsViewModel(authRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.uni_project.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.core.data_class.RegistrationResult
 import com.example.uni_project.presentation.viewmodel.RegistrationViewModel
@@ -37,7 +39,6 @@ import kotlinx.coroutines.launch
 fun RegistrationScreen(
     onBack: () -> Unit,
     onNext: (String, String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -56,15 +57,15 @@ fun RegistrationScreen(
         viewModel.clearErrors()
     }
 
-    // Обработка результата регистрации - переход на второй экран
+
     LaunchedEffect(registrationResult) {
         when (registrationResult) {
             is RegistrationResult.Success -> {
-                // Переходим на следующий экран
+
                 onNext(state.email, state.password)
             }
             is RegistrationResult.Error -> {
-                // Ошибка обрабатывается в UI
+
             }
             null -> {}
         }
@@ -314,7 +315,7 @@ fun RegistrationScreen(
                         )
                     } else {
                         Text(
-                            text = "Далее",
+                            text = stringResource(R.string.cont),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }

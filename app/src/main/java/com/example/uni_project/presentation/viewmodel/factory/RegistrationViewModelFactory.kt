@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.dao.AppDatabase
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.presentation.viewmodel.RegistrationViewModel
 
 class RegistrationViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

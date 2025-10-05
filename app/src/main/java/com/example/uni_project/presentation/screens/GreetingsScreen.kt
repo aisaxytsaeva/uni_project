@@ -5,11 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.R
@@ -71,8 +77,15 @@ fun Greetings(
                 )
             }
         }
-
-        // Кнопка действия
+        LinearProgressIndicator(
+            progress = { (currentPage + 1).toFloat() / viewModel.slides.size },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 100.dp, start = 32.dp, end = 32.dp)
+                .fillMaxWidth(0.5f)
+                .height(4.dp),
+            color = MaterialTheme.colorScheme.primary
+        )
         Button(
             onClick = {
                 if (viewModel.isLastPage) {
@@ -82,10 +95,14 @@ fun Greetings(
                 }
             },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
-                .fillMaxWidth(0.8f)
-
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 80.dp, end = 16.dp)
+                .width(140.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
         ) {
             Text(
                 text = if (viewModel.isLastPage) stringResource(R.string.go) else stringResource(R.string.cont),
@@ -93,5 +110,18 @@ fun Greetings(
                 fontWeight = FontWeight.SemiBold
             )
         }
+
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun Greet(){
+    Greetings(
+        onFinish = {},
+        onSkip = {}
+    )
+}
+
+
+

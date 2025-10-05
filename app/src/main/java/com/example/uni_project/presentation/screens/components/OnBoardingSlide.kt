@@ -2,6 +2,7 @@ package com.example.uni_project.presentation.screens.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,8 +32,7 @@ fun OnboardingSlideItem(
             painter = painterResource(slide.imageRes),
             contentDescription = null,
             modifier = Modifier
-                .size(240.dp)
-                .padding(bottom = 32.dp),
+                .size(width = 600.dp, height = 400.dp),
             contentScale = ContentScale.Fit
         )
 

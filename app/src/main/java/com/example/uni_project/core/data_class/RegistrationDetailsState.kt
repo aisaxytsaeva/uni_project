@@ -5,7 +5,7 @@ data class RegistrationDetailsState(
     val firstName: String = "",
     val middleName: String = "",
     val birthDate: String = "",
-    val gender: Gender = Gender.NOT_SELECTED,
+    val gender: Gender = Gender.UNSPECIFIED,
     val isLoading: Boolean = false,
     val lastNameError: String? = null,
     val firstNameError: String? = null,

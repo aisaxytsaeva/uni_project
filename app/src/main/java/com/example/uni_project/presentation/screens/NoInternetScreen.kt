@@ -2,14 +2,18 @@ package com.example.uni_project.presentation.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -18,56 +22,66 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uni_project.R
-
+import com.example.uni_project.core.rememberNetworkState
+import com.example.uni_project.ui.theme.Purple
 
 
 @Composable
 fun NoInternetScreen(
     onRetry: () -> Unit
-){
+) {
     Surface(
-
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.primary
-    ){
+        color = Color.White
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
+                .background(Color.White)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Start as Arrangement.Vertical
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(R.drawable.no_int),
-                contentDescription = "NoInternet",
-                modifier = Modifier.size(240.dp),
-            )
-            Text(
-                text = stringResource(R.string.no_internet),
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center
-            )
 
-            Text(
-                text = stringResource(R.string.no_int_des),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.no_int),
+                    contentDescription = "NoInternet",
+                    modifier = Modifier.size(150.dp),
+                )
+                Text(
+                    text = stringResource(R.string.no_internet),
+                    color = Purple,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 50.dp)
+                )
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = stringResource(R.string.no_int_des),
+                    color = Color.Black.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 25.dp)
+                )
+            }
+
 
             Button(
                 onClick = onRetry,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(75.dp)
+                    .padding(bottom = 20.dp),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    containerColor = Purple,
+                    contentColor = Color.White
                 )
             ) {
                 Text(
@@ -79,4 +93,10 @@ fun NoInternetScreen(
         }
     }
 }
-
+@Preview(showBackground = true)
+@Composable
+fun NI(){
+    NoInternetScreen(
+        onRetry = {}
+    )
+}

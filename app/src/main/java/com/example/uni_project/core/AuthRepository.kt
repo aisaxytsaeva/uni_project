@@ -1,13 +1,11 @@
-package com.example.uni_project.core.data_class
+package com.example.uni_project.core
 
-
-
-import com.example.uni_project.dao.UserEntity
-
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import android.content.Intent
 import androidx.activity.result.ActivityResult
-
+import com.example.uni_project.core.data_class.Gender
+import com.example.uni_project.core.data_class.LoginResult
+import com.example.uni_project.dao.UserEntity
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 interface AuthRepository {
     // Аутентификация
@@ -51,7 +49,7 @@ interface AuthRepository {
     suspend fun getIncompleteRegistrations(): List<UserEntity>
     suspend fun cleanupIncompleteRegistrations(): Int
 
-    // Google Sign-In - ОБНОВЛЕННЫЕ МЕТОДЫ
+    // Google Sign-In
     suspend fun getGoogleSignInIntent(): Intent
     suspend fun handleGoogleSignInResult(result: ActivityResult): LoginResult
 }

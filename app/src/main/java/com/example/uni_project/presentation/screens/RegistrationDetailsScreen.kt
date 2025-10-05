@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.dao.AppDatabase
@@ -51,7 +52,7 @@ fun RegistrationDetailsScreen(
     }
 
     val viewModel: RegistrationDetailsViewModel = viewModel(
-        factory = RegistrationDetailsViewModelFactory(context.applicationContext)
+        factory = RegistrationDetailsViewModelFactory(context.applicationContext as AuthRepository)
     )
 
     val state by viewModel.state.collectAsState()

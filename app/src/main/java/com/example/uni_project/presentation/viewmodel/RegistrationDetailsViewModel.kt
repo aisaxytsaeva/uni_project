@@ -1,7 +1,7 @@
 package com.example.uni_project.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.uni_project.core.data_class.AuthRepository
+import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.Gender
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
