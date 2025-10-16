@@ -22,8 +22,6 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity)
 
-    @Query("DELETE FROM users WHERE email = :email")
-    suspend fun deleteUser(email: String)
 
     @Query("SELECT * FROM users WHERE token = :token")
     suspend fun getUserByToken(token: String): UserEntity?
@@ -40,7 +38,6 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE documentsUploaded = :uploaded")
     suspend fun getUsersByDocumentsStatus(uploaded: Boolean): List<UserEntity>
 
-    // ДОБАВИТЬ ЭТИ МЕТОДЫ:
 
     @Update
     suspend fun updateUser(user: UserEntity)
@@ -58,9 +55,8 @@ interface UserDao {
     suspend fun cleanupIncompleteRegistrations(timeThreshold: Long = System.currentTimeMillis() - 24 * 60 * 60 * 1000): Int
 
     @Query("DELETE FROM users WHERE email = :email")
-    suspend fun deleteUserByEmail(email: String)
+    suspend fun deleteUserByEmail(email: String): Int
 
-    // Дополнительные методы для удобства
     @Query("SELECT COUNT(*) FROM users WHERE email = :email")
     suspend fun isEmailExists(email: String): Int
 

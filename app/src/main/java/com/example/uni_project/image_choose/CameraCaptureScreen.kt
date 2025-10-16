@@ -1,7 +1,6 @@
 package com.example.uni_project.image_choose
 
 import android.Manifest
-import android.content.Context
 import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Box
@@ -18,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

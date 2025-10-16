@@ -33,6 +33,7 @@ data class UserEntity(
     fun toUser(): User {
         return User(
             email = email,
+            password = password,
             firstName = firstName,
             lastName = lastName,
             middleName = middleName,
@@ -55,6 +56,7 @@ data class UserEntity(
 
 data class User(
     val email: String,
+    val password: String?,
     val firstName: String,
     val lastName: String,
     val middleName: String,
@@ -67,8 +69,8 @@ data class User(
     val passportPhotoUri: String?,
     val authProvider: AuthProvider,
     val createdAt: Long,
-    val lastLogin: Long, // ДОБАВИТЬ
-    val registrationStep: Int, // ДОБАВИТЬ
+    val lastLogin: Long,
+    val registrationStep: Int,
     val registrationCompleted: Boolean,
     val documentsUploaded: Boolean
 )
@@ -76,10 +78,4 @@ data class User(
 enum class AuthProvider {
     LOCAL,    // Обычная регистрация
     GOOGLE    // Через Google
-}
-
-enum class Gender {
-    MALE,
-    FEMALE,
-    NOT_SELECTED
 }

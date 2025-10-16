@@ -2,12 +2,11 @@ package com.example.uni_project.presentation.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.material.icons.filled.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.*
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.withStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -18,18 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.uni_project.R
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.uni_project.core.AuthRepositoryImpl
+import com.example.uni_project.core.GoogleAuthService
+import com.example.uni_project.core.SessionManager
 import com.example.uni_project.core.data_class.RegistrationResult
+import com.example.uni_project.dao.AppDatabase
 import com.example.uni_project.presentation.viewmodel.RegistrationViewModel
 import com.example.uni_project.presentation.viewmodel.factory.RegistrationViewModelFactory
+import com.example.uni_project.ui.theme.Purple
 
 import kotlinx.coroutines.launch
 
@@ -38,15 +43,25 @@ import kotlinx.coroutines.launch
 @Composable
 fun RegistrationScreen(
     onBack: () -> Unit,
-    onNext: (String, String) -> Unit,
+    onRegister: (String, String) -> Unit,
+    sessionManager: SessionManager
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
+    val authRepository = remember {
+        AuthRepositoryImpl(
+            AppDatabase.getInstance(context),
+            GoogleAuthService(context),
+            sessionManager = sessionManager
+
+        )
+    }
+
 
     val viewModel: RegistrationViewModel = viewModel(
-        factory = RegistrationViewModelFactory(context.applicationContext)
+        factory = RegistrationViewModelFactory(authRepository, sessionManager)
     )
 
 
@@ -58,23 +73,18 @@ fun RegistrationScreen(
     }
 
 
-    LaunchedEffect(registrationResult) {
-        when (registrationResult) {
-            is RegistrationResult.Success -> {
-
-                onNext(state.email, state.password)
-            }
-            is RegistrationResult.Error -> {
-
-            }
-            null -> {}
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Создание аккаунта") },
+                title = {
+                    Text(
+                        text = stringResource(R.string.registration_title),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
@@ -95,40 +105,23 @@ fun RegistrationScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
 
-                // Индикатор прогресса
-                Text(
-                    text = "Шаг 1 из 2",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+
 
                 Text(
-                    text = "Основные данные",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Text(
-                    text = "Введите email и пароль для регистрации",
+                    text = stringResource(R.string.mail),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 150.dp)
                 )
 
-
-                // Поле email
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.updateEmail(it) },
-                    label = { Text("Электронная почта") },
-                    placeholder = { Text("example@mail.com") },
+                    label = { Text(stringResource(R.string.mail_sign)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -149,13 +142,17 @@ fun RegistrationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // Поле пароля
+                Text(
+                    text = stringResource(R.string.create_password),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.updatePassword(it) },
-                    label = { Text("Придумайте пароль") },
+                    label = { Text(stringResource(R.string.password_sign)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -197,14 +194,16 @@ fun RegistrationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-
-                // Поле подтверждения пароля
+                Text(
+                    text = stringResource(R.string.confirm_password_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
                 OutlinedTextField(
                     value = state.confirmPassword,
                     onValueChange = { viewModel.updateConfirmPassword(it) },
-                    label = { Text("Повторите пароль") },
+                    label = { Text(stringResource(R.string.password_sign)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -252,7 +251,7 @@ fun RegistrationScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
 
-                // Чекбокс согласия
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -267,16 +266,7 @@ fun RegistrationScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = buildAnnotatedString {
-                            append("Я соглашаюсь с ")
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append("условиями обслуживания")
-                            }
-                            append(" и ")
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append("политикой конфиденциальности")
-                            }
-                        },
+                        text = stringResource(R.string.terms_agreement),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.weight(1f)
                     )
@@ -293,9 +283,9 @@ fun RegistrationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(170.dp))
 
-                // Кнопка Далее
+
                 Button(
                     onClick = {
                         focusManager.clearFocus()
@@ -304,6 +294,10 @@ fun RegistrationScreen(
                         }
                     },
                     enabled = viewModel.isFormValid && !state.isLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple,
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -321,7 +315,7 @@ fun RegistrationScreen(
                     }
                 }
 
-                // Информация о загрузке
+
                 if (state.isLoading) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -351,3 +345,13 @@ fun RegistrationScreen(
         )
     }
 }
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun Reg(){
+//    RegistrationScreen(
+//        onBack = {},
+//        onRegister = { email, password -> }
+//    )
+//}

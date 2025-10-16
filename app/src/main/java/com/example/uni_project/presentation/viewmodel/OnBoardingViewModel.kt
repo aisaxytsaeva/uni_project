@@ -37,14 +37,5 @@ class OnboardingViewModel : ViewModel() {
             _currentPage.intValue++
         }
     }
-
-    fun previousPage() {
-        if (_currentPage.intValue > 0) {
-            _currentPage.intValue--
-        }
-    }
-
-    fun skip() {
-        _currentPage.intValue = _slides.size - 1
-    }
+    
 }

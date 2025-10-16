@@ -1,33 +1,36 @@
 package com.example.uni_project.presentation.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.uni_project.core.AuthRepository
-import com.example.uni_project.core.AuthRepositoryImpl
-import com.example.uni_project.core.GoogleAuthService
-import com.example.uni_project.dao.AppDatabase
+import androidx.compose.ui.unit.sp
 import com.example.uni_project.core.data_class.RegistrationResult
 import com.example.uni_project.presentation.viewmodel.RegistrationDetailsViewModel
-import com.example.uni_project.presentation.viewmodel.factory.RegistrationDetailsViewModelFactory
 import com.example.uni_project.core.data_class.Gender
+import com.example.uni_project.R
+import com.example.uni_project.core.AuthRepository
+import com.example.uni_project.core.DateTransformation
+import com.example.uni_project.ui.theme.Purple
 import kotlinx.coroutines.launch
 
 
@@ -35,41 +38,36 @@ import kotlinx.coroutines.launch
 @Composable
 fun RegistrationDetailsScreen(
     email: String,
+    authRepository: AuthRepository,
+    detailsViewModel: RegistrationDetailsViewModel,
     onBack: () -> Unit,
-    onRegistrationComplete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
+    onRegistrationCont: () -> Unit,
+
+    ) {
+
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
-    val authRepository = remember {
-        AuthRepositoryImpl(
-            AppDatabase.getInstance(context),
-            GoogleAuthService(context),
 
-        )
-    }
 
-    val viewModel: RegistrationDetailsViewModel = viewModel(
-        factory = RegistrationDetailsViewModelFactory(context.applicationContext as AuthRepository)
-    )
 
-    val state by viewModel.state.collectAsState()
-    val registrationResult by viewModel.registrationResult.collectAsState()
+    val state by detailsViewModel.state.collectAsState()
+    val registrationResult by detailsViewModel.registrationResult.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.clearErrors()
+        detailsViewModel.clearErrors()
     }
 
 
     LaunchedEffect(registrationResult) {
         when (registrationResult) {
             is RegistrationResult.Success -> {
-                onRegistrationComplete()
+                onRegistrationCont()
             }
+
             is RegistrationResult.Error -> {
             }
+
             null -> {}
         }
     }
@@ -77,10 +75,18 @@ fun RegistrationDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Дополнительные данные") },
+                title = {
+                    Text(
+                        text = stringResource(R.string.registration_title),
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 }
             )
@@ -98,40 +104,26 @@ fun RegistrationDetailsScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
-                // Индикатор прогресса
-                Text(
-                    text = "Шаг 2 из 2",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+
 
                 Text(
-                    text = "Личные данные",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Text(
-                    text = "Заполните информацию о себе",
+                    text = stringResource(R.string.surname),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
                 )
 
 
                 // Поле Фамилия
                 OutlinedTextField(
                     value = state.lastName,
-                    onValueChange = { viewModel.updateLastName(it) },
-                    label = { Text("Фамилия *") },
-                    placeholder = { Text("Иванов") },
+                    onValueChange = { detailsViewModel.updateLastName(it) },
+                    label = { Text(stringResource(R.string.surname_place)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -152,14 +144,18 @@ fun RegistrationDetailsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.name),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
 
                 // Поле Имя
                 OutlinedTextField(
                     value = state.firstName,
-                    onValueChange = { viewModel.updateFirstName(it) },
-                    label = { Text("Имя *") },
-                    placeholder = { Text("Иван") },
+                    onValueChange = { detailsViewModel.updateFirstName(it) },
+                    label = { Text(stringResource(R.string.name_place)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -180,14 +176,18 @@ fun RegistrationDetailsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // Поле Отчество (необязательное)
+                Text(
+                    text = stringResource(R.string.patronymic),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
+
                 OutlinedTextField(
                     value = state.middleName,
-                    onValueChange = { viewModel.updateMiddleName(it) },
-                    label = { Text("Отчество") },
-                    placeholder = { Text("Иванович") },
+                    onValueChange = { detailsViewModel.updateMiddleName(it) },
+                    label = { Text(stringResource(R.string.patronymic_place)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -196,15 +196,24 @@ fun RegistrationDetailsScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.birth_date),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
 
-
-                // Поле Дата рождения
                 OutlinedTextField(
                     value = state.birthDate,
-                    onValueChange = { viewModel.updateBirthDate(it) },
-                    label = { Text("Дата рождения *") },
-                    placeholder = { Text("MM/DD/YYYY") },
+                    onValueChange = { newValue ->
+
+                        val filtered = newValue.filter { it.isDigit() }
+
+                        if (filtered.length <= 8) {
+                            detailsViewModel.updateBirthDate(filtered)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.date)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -213,17 +222,9 @@ fun RegistrationDetailsScreen(
                     keyboardActions = KeyboardActions(
                         onDone = { focusManager.clearFocus() }
                     ),
+                    visualTransformation = DateTransformation(),
                     isError = state.birthDateError != null,
                     modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "Формат: MM/DD/YYYY",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 4.dp)
                 )
 
                 state.birthDateError?.let { error ->
@@ -239,9 +240,9 @@ fun RegistrationDetailsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Выбор пола
+
                 Text(
-                    text = "Пол *",
+                    text = stringResource(R.string.gender),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -250,36 +251,78 @@ fun RegistrationDetailsScreen(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    // Кнопка Мужской
-                    OutlinedButton(
-                        onClick = { viewModel.updateGender(Gender.MALE) },
-                        modifier = Modifier.weight(1f),
-                        colors = if (state.gender == Gender.MALE) {
-                            ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        } else {
-                            ButtonDefaults.outlinedButtonColors()
-                        }
+                    // Мужской
+                    Row(
+                        modifier = Modifier
+                            .clickable { detailsViewModel.updateGender(Gender.MALE) }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Мужской")
+                        Box(
+                            modifier = Modifier
+                                .size(15.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (state.gender == Gender.MALE) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.outline
+                                    },
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .background(
+                                    color = if (state.gender == Gender.MALE) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        Color.Transparent
+                                    },
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.male),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 14.sp
+                        )
                     }
 
-                    // Кнопка Женский
-                    OutlinedButton(
-                        onClick = { viewModel.updateGender(Gender.FEMALE) },
-                        modifier = Modifier.weight(1f),
-                        colors = if (state.gender == Gender.FEMALE) {
-                            ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        } else {
-                            ButtonDefaults.outlinedButtonColors()
-                        }
+                    // Женский
+                    Row(
+                        modifier = Modifier
+                            .clickable { detailsViewModel.updateGender(Gender.FEMALE) }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Женский")
+                        Box(
+                            modifier = Modifier
+                                .size(15.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (state.gender == Gender.FEMALE) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.outline
+                                    },
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .background(
+                                    color = if (state.gender == Gender.FEMALE) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        Color.Transparent
+                                    },
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.female),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 14.sp
+                        )
                     }
                 }
 
@@ -295,18 +338,19 @@ fun RegistrationDetailsScreen(
                 }
 
 
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Кнопка Завершить регистрацию
+                Spacer(modifier = Modifier.height(125.dp))
                 Button(
                     onClick = {
                         focusManager.clearFocus()
                         scope.launch {
-                            val success = viewModel.completeRegistration(email)
-                            // Если успешно, переход произойдет через LaunchedEffect
+                            detailsViewModel.completeRegistration(email)
                         }
                     },
-                    enabled = viewModel.isFormValid && !state.isLoading,
+                    enabled = detailsViewModel.isFormValid && !state.isLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple,
+                         ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -324,7 +368,6 @@ fun RegistrationDetailsScreen(
                     }
                 }
 
-                // Информация о загрузке
                 if (state.isLoading) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -337,49 +380,20 @@ fun RegistrationDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
 
-    // Диалог успешной регистрации
-    if (registrationResult is RegistrationResult.Success) {
-        val successResult = registrationResult as RegistrationResult.Success
-        AlertDialog(
-            onDismissRequest = {
-                viewModel.clearRegistrationResult()
-                onRegistrationComplete()
-            },
-            title = { Text("Регистрация завершена!") },
-            text = {
-                Column {
-                    Text(successResult.message)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Добро пожаловать в приложение!")
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.clearRegistrationResult()
-                        onRegistrationComplete()
+        // Диалог ошибки
+        if (registrationResult is RegistrationResult.Error) {
+            val errorResult = registrationResult as RegistrationResult.Error
+            AlertDialog(
+                onDismissRequest = { detailsViewModel.clearRegistrationResult() },
+                title = { Text("Ошибка регистрации") },
+                text = { Text(errorResult.message) },
+                confirmButton = {
+                    Button(onClick = { detailsViewModel.clearRegistrationResult() }) {
+                        Text("OK")
                     }
-                ) {
-                    Text("На главный экран")
                 }
-            }
-        )
-    }
-
-    // Диалог ошибки
-    if (registrationResult is RegistrationResult.Error) {
-        val errorResult = registrationResult as RegistrationResult.Error
-        AlertDialog(
-            onDismissRequest = { viewModel.clearRegistrationResult() },
-            title = { Text("Ошибка регистрации") },
-            text = { Text(errorResult.message) },
-            confirmButton = {
-                Button(onClick = { viewModel.clearRegistrationResult() }) {
-                    Text("OK")
-                }
-            }
-        )
+            )
+        }
     }
 }

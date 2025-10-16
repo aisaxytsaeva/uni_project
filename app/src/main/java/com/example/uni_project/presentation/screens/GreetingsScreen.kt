@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.R
 import com.example.uni_project.presentation.viewmodel.OnboardingViewModel
 import com.example.uni_project.presentation.screens.components.OnboardingSlideItem
+import com.example.uni_project.ui.theme.Purple
 
 @Composable
 fun Greetings(
@@ -101,8 +102,8 @@ fun Greetings(
                 .height(50.dp),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+                containerColor = Purple,
+            ),
         ) {
             Text(
                 text = if (viewModel.isLastPage) stringResource(R.string.go) else stringResource(R.string.cont),

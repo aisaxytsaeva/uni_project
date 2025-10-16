@@ -10,10 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.*
 import androidx.compose.foundation.text.*
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,21 +22,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
+import com.example.uni_project.R
 import com.example.uni_project.core.AuthRepositoryImpl
+import com.example.uni_project.core.DateTransformation
 import com.example.uni_project.core.GoogleAuthService
+import com.example.uni_project.core.SessionManager
 import com.example.uni_project.dao.AppDatabase
 import com.example.uni_project.core.data_class.RegistrationResult
 import com.example.uni_project.image_choose.rememberImagePicker
 import com.example.uni_project.presentation.viewmodel.DocumentUploadViewModel
 import com.example.uni_project.presentation.viewmodel.factory.DocumentUploadViewModelFactory
+import com.example.uni_project.ui.theme.Purple
+import com.example.uni_project.ui.theme.Uni_projectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +55,8 @@ fun DocumentUploadScreen(
     email: String,
     onBack: () -> Unit,
     onRegistrationComplete: () -> Unit,
-    modifier: Modifier = Modifier
+    sessionManager: SessionManager
+
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -53,17 +66,18 @@ fun DocumentUploadScreen(
         AuthRepositoryImpl(
             AppDatabase.getInstance(context),
             GoogleAuthService(context),
+            sessionManager = sessionManager
+
         )
     }
 
     val viewModel: DocumentUploadViewModel = viewModel(
-        factory = DocumentUploadViewModelFactory(authRepository)
+        factory = DocumentUploadViewModelFactory(authRepository,sessionManager)
     )
 
     val state by viewModel.state.collectAsState()
     val registrationResult by viewModel.registrationResult.collectAsState()
 
-    // Контроллеры для выбора изображений
     val profilePhotoPicker = rememberImagePicker { uri ->
         viewModel.updateProfilePhoto(uri.toString())
     }
@@ -80,14 +94,13 @@ fun DocumentUploadScreen(
         viewModel.clearErrors()
     }
 
-    // Обработка завершения регистрации
     LaunchedEffect(registrationResult) {
         when (registrationResult) {
             is RegistrationResult.Success -> {
                 onRegistrationComplete()
             }
             is RegistrationResult.Error -> {
-                // Ошибка обрабатывается в UI
+
             }
             null -> {}
         }
@@ -96,10 +109,18 @@ fun DocumentUploadScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Загрузка документов") },
+                title = {
+                    Text(
+                        text = stringResource(R.string.registration_title),
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 }
             )
@@ -117,31 +138,10 @@ fun DocumentUploadScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
 
-                Text(
-                    text = "Документы",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Text(
-                    text = "Загрузите необходимые документы",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-                )
-
-                // Фото профиля (необязательное)
-                Text(
-                    text = "Фото профиля (необязательно)",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth()
-                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -154,37 +154,43 @@ fun DocumentUploadScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     if (state.profilePhotoUri != null) {
-                        // Показать выбранное фото
                         Image(
                             painter = rememberAsyncImagePainter(state.profilePhotoUri),
                             contentDescription = "Фото профиля",
                             modifier = Modifier
                                 .fillMaxSize()
-                                .clip(CircleShape)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
                     } else {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.AddAPhoto,
-                                contentDescription = "Добавить фото",
-                                modifier = Modifier.size(40.dp)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text("Добавить фото", style = MaterialTheme.typography.bodySmall)
-                        }
+                        Image(
+                            painter = painterResource(R.drawable.profile),
+                            contentDescription = "Добавить фото",
+                            modifier = Modifier
+                                .size(60.dp),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 }
+                Text(
+                    text = stringResource(R.string.photo),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 10.dp)
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    )
 
-                // Номер водительского удостоверения
+                Text(
+                    text = stringResource(R.string.license),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 50.dp)
+                )
+
                 OutlinedTextField(
                     value = state.driverLicenseNumber,
                     onValueChange = { viewModel.updateDriverLicenseNumber(it) },
-                    label = { Text("Номер водительского удостоверения *") },
-                    placeholder = { Text("AB123456") },
+                    label = { Text(stringResource(R.string.license_mask)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -204,15 +210,21 @@ fun DocumentUploadScreen(
                             .padding(top = 4.dp, start = 4.dp)
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Дата выдачи
+                Text(
+                    text = stringResource(R.string.date_),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
                 OutlinedTextField(
                     value = state.driverLicenseIssueDate,
-                    onValueChange = { viewModel.updateDriverLicenseIssueDate(it) },
-                    label = { Text("Дата выдачи *") },
-                    placeholder = { Text("DD/MM/YYYY") },
+                    onValueChange = { newValue ->
+                        val filtered = newValue.filter { it.isDigit() }
+                        if (filtered.length <= 8) {
+                            viewModel.updateDriverLicenseIssueDate(filtered)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.date)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -221,17 +233,9 @@ fun DocumentUploadScreen(
                     keyboardActions = KeyboardActions(
                         onDone = { focusManager.clearFocus() }
                     ),
+                    visualTransformation = DateTransformation(),
                     isError = state.issueDateError != null,
                     modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "Формат: DD/MM/YYYY",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 4.dp)
                 )
 
                 state.issueDateError?.let { error ->
@@ -247,9 +251,9 @@ fun DocumentUploadScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Загрузка фото водительского удостоверения
+
                 DocumentUploadSection(
-                    title = "Фото водительского удостоверения *",
+                    title = "Загрузите фото водительского удостоверения",
                     isUploaded = state.driverLicensePhotoUri != null,
                     error = state.driverLicensePhotoError,
                     onUploadClick = {
@@ -259,9 +263,9 @@ fun DocumentUploadScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Загрузка фото паспорта
+
                 DocumentUploadSection(
-                    title = "Фото паспорта *",
+                    title = "Загрузите фото паспорта",
                     isUploaded = state.passportPhotoUri != null,
                     error = state.passportPhotoError,
                     onUploadClick = {
@@ -269,18 +273,22 @@ fun DocumentUploadScreen(
                     }
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(100.dp))
 
-                // Кнопка Завершить регистрацию
+
                 Button(
                     onClick = {
                         focusManager.clearFocus()
                         scope.launch {
-                            val success = viewModel.completeDocumentUpload(email)
-                            // Если успешно, переход произойдет через LaunchedEffect
+                            val success = viewModel.completeRegistration(email)
+
                         }
                     },
                     enabled = viewModel.isFormValid && !state.isLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple,
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -292,13 +300,13 @@ fun DocumentUploadScreen(
                         )
                     } else {
                         Text(
-                            text = "Завершить регистрацию",
+                            text = stringResource(R.string.cont),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
                 }
 
-                // Информация о загрузке
+
                 if (state.isLoading) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -330,30 +338,41 @@ fun DocumentUploadSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedButton(
+        TextButton(
             onClick = onUploadClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (isUploaded) {
-                Icon(Icons.Default.Check, contentDescription = "Загружено")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Фото загружено")
-            } else {
-                Icon(Icons.Default.Upload, contentDescription = "Загрузить")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Загрузить фото")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isUploaded) {
+                    Icon(Icons.Default.Check, contentDescription = "Загружено")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Фото загружено")
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.upload),
+                        contentDescription = "Загрузить",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Загрузить фото")
+                }
             }
-        }
-
-        error?.let {
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp)
-            )
         }
     }
 }
+
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun DocumentUploadScreenPreview() {
+//    Uni_projectTheme {
+//        DocumentUploadScreen(
+//            email = "test@example.com",
+//            onBack = {},
+//            onRegistrationComplete = {}
+//        )
+//    }
+//}

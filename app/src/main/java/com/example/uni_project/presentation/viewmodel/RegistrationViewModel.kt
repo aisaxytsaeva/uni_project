@@ -1,6 +1,7 @@
 package com.example.uni_project.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.uni_project.dao.UserEntity
 import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.RegistrationResult
@@ -8,6 +9,7 @@ import com.example.uni_project.core.data_class.RegistrationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class RegistrationViewModel(
     private val authRepository: AuthRepository
@@ -170,7 +172,6 @@ class RegistrationViewModel(
     fun clearRegistrationResult() {
         _registrationResult.value = null
     }
-
 
     suspend fun debugGetAllUsers(): List<UserEntity> {
         return try {

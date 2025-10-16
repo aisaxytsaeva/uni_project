@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,36 +29,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.uni_project.presentation.viewmodel.AuthViewModel
-import com.example.uni_project.presentation.viewmodel.factory.AuthViewModelFactory
 import com.example.uni_project.R
 import com.example.uni_project.core.data_class.GoogleSignInEvent
+import com.example.uni_project.presentation.viewmodel.AuthViewModel
 import com.example.uni_project.ui.theme.Purple
 
 @Composable
 fun AuthorizationScreen(
     onAuthorization: () -> Unit,
     onRegistration: () -> Unit,
+    authViewModel: AuthViewModel
 
 ) {
-    val context = LocalContext.current
-    val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(context)
-    )
-    val state by viewModel.loginState.collectAsState()
+
+    val scope = rememberCoroutineScope()
+    val state by authViewModel.loginState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     val authResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            viewModel.handleGoogleSignInResult(result)
+            authViewModel.handleGoogleSignInResult(result)
         }
     )
 
 
     LaunchedEffect(Unit) {
-        viewModel.googleSignInEvent.collect { event ->
+        authViewModel.googleSignInEvent.collect { event ->
             when (event) {
                 is GoogleSignInEvent.LaunchSignIn -> {
                     authResultLauncher.launch(event.signInIntent)
@@ -73,7 +71,7 @@ fun AuthorizationScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.clearError()
+        authViewModel.clearError()
     }
 
     Surface(
@@ -126,7 +124,7 @@ fun AuthorizationScreen(
 
             OutlinedTextField(
                 value = state.email,
-                onValueChange = { viewModel.updateEmail(it) },
+                onValueChange = { authViewModel.updateEmail(it) },
                 label = { Text(stringResource(R.string.mail_sign)) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -142,7 +140,7 @@ fun AuthorizationScreen(
 
             OutlinedTextField(
                 value = state.password,
-                onValueChange = { viewModel.updatePassword(it) },
+                onValueChange = { authViewModel.updatePassword(it) },
                 label = { Text(stringResource(R.string.password_sign)) },
                 visualTransformation = if (state.isPasswordVisible) {
                     VisualTransformation.None
@@ -150,7 +148,7 @@ fun AuthorizationScreen(
                     PasswordVisualTransformation()
                 },
                 trailingIcon = {
-                    IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                    IconButton(onClick = { authViewModel.togglePasswordVisibility() }) {
                         Icon(
                             imageVector = if (state.isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = "Видимость пароля"
@@ -189,11 +187,14 @@ fun AuthorizationScreen(
 
             Button(
                 onClick = {
-                    viewModel.login { result ->
+                    authViewModel.login { result ->
                         if (result.success) onAuthorization()
                     }
                 },
-                enabled = viewModel.isFormValid && !state.isLoading,
+                enabled = authViewModel.isFormValid && !state.isLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Purple,
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -209,7 +210,7 @@ fun AuthorizationScreen(
 
             OutlinedButton(
                 onClick = {
-                    viewModel.prepareGoogleSignIn()
+                    authViewModel.prepareGoogleSignIn()
                 },
                 enabled = !state.isLoading,
                 modifier = Modifier
@@ -245,11 +246,11 @@ fun AuthorizationScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun Auto(){
-    AuthorizationScreen(
-        onAuthorization = {},
-        onRegistration = {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun Auto(){
+//    AuthorizationScreen(
+//        onAuthorization = {},
+//        onRegistration = {}
+//    )
+//}

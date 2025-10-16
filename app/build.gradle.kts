@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.ui)
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.play.services.auth)
 

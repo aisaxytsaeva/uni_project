@@ -27,10 +27,31 @@
     <string name="sign_in_g">Войти через Google</string>
     <string name="forgotten_password"> Забыли пароль?</string>
 
-    <string name="registration_title">Создать аккаунта</string>
+    <string name="registration_title">Создать аккаунт</string>
     <string name="confirm_password_hint">Повторите пароль</string>
+    <string name="create_password">Придумайте пароль</string>
     <string name="terms_agreement">Я соглашаюсь с условиями обслуживания и политикой конфиденциальности</string>
 
+
+    <string name="surname">Фамилия</string>
+    <string name="surname_place">Введите фамилию</string>
+    <string name="name">Имя</string>
+    <string name="name_place">Введите имя</string>
+    <string name="patronymic">Отчество</string>
+    <string name="patronymic_place">Введите отчество</string>
+    <string name="birth_date">Дата рождения</string>
+    <string name="date">DD/MM/YYYY</string>
+    <string name="gender">Пол</string>
+    <string name="male">Мужской</string>
+    <string name="female">Женский</string>
+
+    <string name="license">Номер водительского удостоверения</string>
+    <string name="license_mask">0000000000</string>
+    <string name="date_">Дата выдачи</string>
+    <string name="photo">Добавление фотографии поможет владельцам и арендодаторам узнать друг друга, когда они будут забирать машину</string>
+
+
+    
 
     //congrats
     <string name="name_congrats">Пользуйтесь с удовлольствием</string>

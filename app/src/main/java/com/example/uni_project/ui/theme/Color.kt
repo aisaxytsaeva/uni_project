@@ -1,8 +1,9 @@
 package com.example.uni_project.ui.theme
 
+import androidx.compose.material3.ButtonColors
 import androidx.compose.ui.graphics.Color
 
-val Purple= Color(0xFF2A1246)
+val Purple = Color(0xFF2A1246)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 

@@ -5,10 +5,8 @@ import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.Gender
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import com.example.uni_project.core.data_class.RegistrationDetailsState
 import com.example.uni_project.core.data_class.RegistrationResult
 
@@ -26,90 +24,109 @@ class RegistrationDetailsViewModel(
     val isFormValid: Boolean
         get() = _state.value.lastName.isNotBlank() &&
                 _state.value.firstName.isNotBlank() &&
-                _state.value.birthDate.isNotBlank() &&
+                _state.value.birthDate.length == 8 && // 8 цифр для DDMMYYYY
                 _state.value.gender != Gender.UNSPECIFIED &&
                 isBirthDateValid(_state.value.birthDate)
 
-    // Валидация даты рождения (MM/DD/YYYY)
+    // Упрощенная валидация даты рождения (DDMMYYYY)
     private fun isBirthDateValid(date: String): Boolean {
+        if (date.length != 8) return false
+
         return try {
-            val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.US)
-            dateFormat.isLenient = false
-            val parsedDate = dateFormat.parse(date)
-            parsedDate != null && parsedDate.before(Date())
+            val day = date.substring(0, 2).toInt()
+            val month = date.substring(2, 4).toInt()
+            val year = date.substring(4, 8).toInt()
+
+
+            day in 1..31 && month in 1..12 && year in 1900..2025
         } catch (e: Exception) {
             false
         }
     }
 
     fun updateLastName(lastName: String) {
-        _state.value = _state.value.copy(
-            lastName = lastName.trim(),
-            lastNameError = null
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                lastName = lastName.trim(),
+                lastNameError = null
+            )
+        }
     }
 
     fun updateFirstName(firstName: String) {
-        _state.value = _state.value.copy(
-            firstName = firstName.trim(),
-            firstNameError = null
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                firstName = firstName.trim(),
+                firstNameError = null
+            )
+        }
     }
 
     fun updateMiddleName(middleName: String) {
-        _state.value = _state.value.copy(
-            middleName = middleName.trim()
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                middleName = middleName.trim()
+            )
+        }
     }
 
     fun updateBirthDate(birthDate: String) {
-        _state.value = _state.value.copy(
-            birthDate = birthDate,
-            birthDateError = null
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                birthDate = birthDate,
+                birthDateError = null
+            )
+        }
     }
 
     fun updateGender(gender: Gender) {
-        _state.value = _state.value.copy(
-            gender = gender,
-            genderError = null
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                gender = gender,
+                genderError = null
+            )
+        }
     }
 
     fun clearErrors() {
-        _state.value = _state.value.copy(
-            lastNameError = null,
-            firstNameError = null,
-            birthDateError = null,
-            genderError = null
-        )
+        _state.update { currentState ->
+            currentState.copy(
+                lastNameError = null,
+                firstNameError = null,
+                birthDateError = null,
+                genderError = null
+            )
+        }
     }
-
-
-
 
     suspend fun completeRegistration(email: String): Boolean {
         if (!isFormValid) {
             val errors = validateForm()
-            _state.value = _state.value.copy(
-                lastNameError = errors["lastName"],
-                firstNameError = errors["firstName"],
-                birthDateError = errors["birthDate"],
-                genderError = errors["gender"]
-            )
+            _state.update { currentState ->
+                currentState.copy(
+                    lastNameError = errors["lastName"],
+                    firstNameError = errors["firstName"],
+                    birthDateError = errors["birthDate"],
+                    genderError = errors["gender"]
+                )
+            }
             return false
         }
 
-        _state.value = _state.value.copy(isLoading = true)
+        _state.update { currentState ->
+            currentState.copy(isLoading = true)
+        }
 
         return try {
-            // Используем authRepository переданный в конструкторе
+            // Форматируем дату для отображения
+            val displayDate = formatDateForDisplay(_state.value.birthDate)
+
             val result = authRepository.registerStep2(
                 email = email,
                 firstName = _state.value.firstName,
                 lastName = _state.value.lastName,
                 middleName = _state.value.middleName,
-                birthDate = _state.value.birthDate,
+                birthDate = _state.value.birthDate, // сохраняем как DDMMYYYY
                 gender = _state.value.gender
             )
 
@@ -128,20 +145,25 @@ class RegistrationDetailsViewModel(
                     message = "Регистрация завершена успешно!\n\n" +
                             "Данные пользователя:\n" +
                             "ФИО: $fullName\n" +
-                            "Дата рождения: ${_state.value.birthDate}\n" +
-                            "Пол: ${getGenderText(_state.value.gender)}\n\n" +
-                            "Все данные сохранены в базе данных!"
+                            "Дата рождения: $displayDate\n" +
+                            "Пол: ${getGenderText(_state.value.gender)}"
                 )
                 true
             } else {
-                _registrationResult.value = RegistrationResult.Error(result.error ?: "Ошибка завершения регистрации")
+                _registrationResult.value = RegistrationResult.Error(
+                    result.error ?: "Ошибка завершения регистрации"
+                )
                 false
             }
         } catch (e: Exception) {
-            _registrationResult.value = RegistrationResult.Error("Ошибка сети: ${e.message}")
+            _registrationResult.value = RegistrationResult.Error(
+                "Ошибка: ${e.message ?: "Неизвестная ошибка"}"
+            )
             false
         } finally {
-            _state.value = _state.value.copy(isLoading = false)
+            _state.update { currentState ->
+                currentState.copy(isLoading = false)
+            }
         }
     }
 
@@ -149,13 +171,23 @@ class RegistrationDetailsViewModel(
         val errors = mutableMapOf<String, String?>()
 
         // Валидация фамилии
-        if (_state.value.lastName.isBlank()) {
-            errors["lastName"] = "Фамилия обязательна для заполнения"
+        when {
+            _state.value.lastName.isBlank() -> {
+                errors["lastName"] = "Фамилия обязательна для заполнения"
+            }
+            _state.value.lastName.length < 2 -> {
+                errors["lastName"] = "Слишком короткая фамилия"
+            }
         }
 
         // Валидация имени
-        if (_state.value.firstName.isBlank()) {
-            errors["firstName"] = "Имя обязательно для заполнения"
+        when {
+            _state.value.firstName.isBlank() -> {
+                errors["firstName"] = "Имя обязательно для заполнения"
+            }
+            _state.value.firstName.length < 2 -> {
+                errors["firstName"] = "Слишком короткое имя"
+            }
         }
 
         // Валидация даты рождения
@@ -163,8 +195,11 @@ class RegistrationDetailsViewModel(
             _state.value.birthDate.isBlank() -> {
                 errors["birthDate"] = "Дата рождения обязательна для заполнения"
             }
+            _state.value.birthDate.length != 8 -> {
+                errors["birthDate"] = "Введите полную дату в формате ДД.ММ.ГГГГ"
+            }
             !isBirthDateValid(_state.value.birthDate) -> {
-                errors["birthDate"] = "Введите корректную дату рождения в формате MM/DD/YYYY"
+                errors["birthDate"] = "Введите корректную дату рождения"
             }
         }
 
@@ -180,7 +215,16 @@ class RegistrationDetailsViewModel(
         return when (gender) {
             Gender.MALE -> "Мужской"
             Gender.FEMALE -> "Женский"
-            Gender.UNSPECIFIED, -> "Не выбран"
+            Gender.UNSPECIFIED -> "Не выбран"
+        }
+    }
+
+    // Функция для форматирования даты для отображения
+    private fun formatDateForDisplay(date: String): String {
+        return if (date.length == 8) {
+            "${date.substring(0, 2)}.${date.substring(2, 4)}.${date.substring(4, 8)}"
+        } else {
+            date
         }
     }
 

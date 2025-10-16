@@ -2,7 +2,6 @@ package com.example.uni_project.presentation.viewmodel
 
 
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import com.example.uni_project.core.AuthRepository
 import com.example.uni_project.core.data_class.LoginResult
@@ -12,8 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import android.content.Context
 import androidx.activity.result.ActivityResult
+import com.example.uni_project.core.SessionManager
 
 import com.example.uni_project.core.data_class.GoogleSignInEvent
 import kotlinx.coroutines.flow.*
@@ -23,7 +22,7 @@ import kotlinx.coroutines.flow.*
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    @SuppressLint("StaticFieldLeak") private val context: Context
+    sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginState())
@@ -81,7 +80,7 @@ class AuthViewModel(
             )
 
             if (result.success) {
-                saveToken(result.token!!)
+
                 saveLoginData(_loginState.value.email)
             }
 
@@ -118,7 +117,7 @@ class AuthViewModel(
                 val authResult = authRepository.handleGoogleSignInResult(result)
 
                 if (authResult.success) {
-                    saveToken(authResult.token!!)
+
                     saveLoginData(_loginState.value.email)
                     _loginState.value = _loginState.value.copy(
                         isLoading = false,
@@ -139,34 +138,9 @@ class AuthViewModel(
             }
         }
     }
-
-    private fun saveToken(token: String) {
-        try {
-            val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putString("access_token", token)
-                .putBoolean("is_logged_in", true)
-                .putLong("login_timestamp", System.currentTimeMillis())
-                .apply()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     private fun saveLoginData(email: String) {
-        try {
-            val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit()
-                .putString("saved_email", email)
-                .apply()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
-    fun hasActiveSession(): Boolean {
-        val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean("is_logged_in", false)
     }
 }
+
 

@@ -7,9 +7,12 @@ import com.example.uni_project.core.AuthRepositoryImpl
 import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.dao.AppDatabase
 import com.example.uni_project.core.AuthRepository
+import com.example.uni_project.core.SessionManager
 import com.example.uni_project.presentation.viewmodel.RegistrationDetailsViewModel
 
-class RegistrationDetailsViewModelFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
+class RegistrationDetailsViewModelFactory(private val authRepository: AuthRepository,
+                                          private val sessionManager: SessionManager
+) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
