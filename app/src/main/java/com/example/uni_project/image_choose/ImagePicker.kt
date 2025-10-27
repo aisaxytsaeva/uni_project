@@ -45,7 +45,6 @@ fun rememberImagePicker(
 
     if (showImagePicker) {
         if (useCamera) {
-            // Оборачиваем камеру в Dialog для полноэкранного режима
             Dialog(
                 onDismissRequest = {
                     showImagePicker = false

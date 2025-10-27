@@ -4,44 +4,60 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.uni_project.core.AppPreferences
-import com.example.uni_project.presentation.screens.SplashScreen
+import com.example.uni_project.core.AuthRepositoryImpl
+import com.example.uni_project.core.GoogleAuthService
 import com.example.uni_project.core.Route
+import com.example.uni_project.core.SessionManager
+import com.example.uni_project.core.data_class.BottomNavItem
+import com.example.uni_project.core.data_class.RegistrationResult
 import com.example.uni_project.core.rememberNetworkState
+import com.example.uni_project.dao.AppDatabase
+import com.example.uni_project.presentation.components.BottomNavigationBar
 import com.example.uni_project.presentation.screens.AuthorizationScreen
 import com.example.uni_project.presentation.screens.CongratulationScreen
 import com.example.uni_project.presentation.screens.DocumentUploadScreen
+import com.example.uni_project.presentation.screens.FavouriteScreen
 import com.example.uni_project.presentation.screens.GettingStartedScreen
 import com.example.uni_project.presentation.screens.Greetings
+import com.example.uni_project.presentation.screens.HomeScreen
 import com.example.uni_project.presentation.screens.NoInternetScreen
+import com.example.uni_project.presentation.screens.ProfileScreen
 import com.example.uni_project.presentation.screens.RegistrationDetailsScreen
 import com.example.uni_project.presentation.screens.RegistrationScreen
+import com.example.uni_project.presentation.screens.SearchResultsScreen
+import com.example.uni_project.presentation.screens.SettingsScreen
+import com.example.uni_project.presentation.screens.SplashScreen
+import com.example.uni_project.presentation.viewmodel.AuthViewModel
 import com.example.uni_project.presentation.viewmodel.DocumentUploadViewModel
+import com.example.uni_project.presentation.viewmodel.ProfileViewModel
 import com.example.uni_project.presentation.viewmodel.RegistrationDetailsViewModel
 import com.example.uni_project.presentation.viewmodel.RegistrationViewModel
-import com.example.uni_project.ui.theme.Uni_projectTheme
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.example.uni_project.core.AuthRepositoryImpl
-import com.example.uni_project.core.GoogleAuthService
-import com.example.uni_project.core.SessionManager
-import com.example.uni_project.core.data_class.RegistrationResult
-import com.example.uni_project.dao.AppDatabase
-import com.example.uni_project.presentation.screens.HomeScreen
-import com.example.uni_project.presentation.viewmodel.AuthViewModel
+import com.example.uni_project.presentation.viewmodel.SettingsViewModel
 import com.example.uni_project.presentation.viewmodel.factory.AuthViewModelFactory
 import com.example.uni_project.presentation.viewmodel.factory.DocumentUploadViewModelFactory
+import com.example.uni_project.presentation.viewmodel.factory.ProfileViewModelFactory
 import com.example.uni_project.presentation.viewmodel.factory.RegistrationDetailsViewModelFactory
 import com.example.uni_project.presentation.viewmodel.factory.RegistrationViewModelFactory
+import com.example.uni_project.presentation.viewmodel.factory.SettingsViewModelFactory
+import com.example.uni_project.ui.theme.Uni_projectTheme
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
 
 
 class MainActivity : ComponentActivity() {
@@ -65,6 +81,11 @@ class MainActivity : ComponentActivity() {
                         sessionManager = sessionManager
                     )
                 }
+
+                val currentDestination = navController.currentBackStackEntryAsState().value?.destination
+                val currentRoute = currentDestination?.route
+                val showBottomBar = BottomNavItem.isMainScreen(currentRoute)
+
                 LaunchedEffect(Unit) {
                     val currentUser = authRepository.getCurrentUser()
                     println("DEBUG AppStart: Current user: ${currentUser?.email}")
@@ -90,214 +111,330 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                NavHost(
-                    navController = navController,
-                    startDestination = Route.SplashScreen.route
-                ) {
-                    composable(Route.SplashScreen.route) {
-                        SplashScreen(
-                            onSplashComplete = {
-                                if (isOnline) {
-                                    if (appPreferences.isFirstLaunch) {
-                                        navController.navigate(Route.Greetings.route) {
-                                            popUpTo(Route.SplashScreen.route) {
-                                                inclusive = true
+
+                Scaffold(
+                    bottomBar = {
+                        if (showBottomBar) {
+                            BottomNavigationBar(
+                                currentRoute = currentRoute ?: Route.HomeScreen.route,
+                                onItemClick = { route ->
+                                    if (currentRoute != route) {
+                                        navController.navigate(route) {
+
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+
+                                            launchSingleTop = true
+
+                                            restoreState = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = Route.SplashScreen.route,
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable(Route.SplashScreen.route) {
+                            SplashScreen(
+                                onSplashComplete = {
+                                    if (isOnline) {
+                                        if (appPreferences.isFirstLaunch) {
+                                            navController.navigate(Route.Greetings.route) {
+                                                popUpTo(Route.SplashScreen.route) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        } else {
+                                            navController.navigate(Route.Autorization.route) {
+                                                popUpTo(Route.SplashScreen.route) {
+                                                    inclusive = true
+                                                }
                                             }
                                         }
                                     } else {
-                                        navController.navigate(Route.Autorization.route) {
+                                        navController.navigate(Route.NoInternet.route) {
                                             popUpTo(Route.SplashScreen.route) {
                                                 inclusive = true
                                             }
                                         }
                                     }
-                                } else {
-                                    navController.navigate(Route.NoInternet.route) {
-                                        popUpTo(Route.SplashScreen.route) {
+                                }
+                            )
+                        }
+
+                        composable(Route.Greetings.route) {
+                            Greetings(
+                                onFinish = {
+                                    appPreferences.isFirstLaunch = false
+                                    navController.navigate(Route.GettingStarted.route) {
+                                        popUpTo(Route.Greetings.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                },
+                                onSkip = {
+                                    appPreferences.isFirstLaunch = false
+                                    navController.navigate(Route.GettingStarted.route) {
+                                        popUpTo(Route.Greetings.route) {
                                             inclusive = true
                                         }
                                     }
                                 }
-                            }
-                        )
-                    }
-
-                    composable(Route.Greetings.route) {
-                        Greetings(
-                            onFinish = {
-                                appPreferences.isFirstLaunch = false
-                                navController.navigate(Route.GettingStarted.route) {
-                                    popUpTo(Route.Greetings.route) {
-                                        inclusive = true
-                                    }
-                                }
-                            },
-                            onSkip = {
-                                appPreferences.isFirstLaunch = false
-                                navController.navigate(Route.GettingStarted.route) {
-                                    popUpTo(Route.Greetings.route) {
-                                        inclusive = true
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    composable(Route.GettingStarted.route) {
-                        GettingStartedScreen(
-                            onRegistrationClick = { navController.navigate(Route.Registration1.route) },
-                            onAuthorizationClick = { navController.navigate(Route.Autorization.route) }
-                        )
-                    }
-
-                    composable(Route.Autorization.route) {
-                        val authViewModel: AuthViewModel = viewModel(
-                            factory = AuthViewModelFactory(authRepository, sessionManager)
-                        )
-
-                        AuthorizationScreen(
-                            onAuthorization = { navController.navigate(Route.HomeScreen.route) },
-                            onRegistration = { navController.navigate(Route.Registration1.route) },
-                            authViewModel = authViewModel
-                        )
-                    }
-
-                    composable(Route.Registration1.route) {
-                        val viewModel: RegistrationViewModel = viewModel(
-                            factory = RegistrationViewModelFactory(authRepository, sessionManager)
-                        )
-                        val scope = rememberCoroutineScope()
-
-                        LaunchedEffect(viewModel.registrationResult) {
-                            viewModel.registrationResult.collect { result ->
-                                when (result) {
-                                    is RegistrationResult.Success -> {
-                                        val email = viewModel.registrationState.value.email
-                                        println("DEBUG Registration1: Navigating with email: $email")
-                                        navController.navigate(Route.Registration2.createRoute(email))
-                                    }
-                                    is RegistrationResult.Error -> {}
-                                    null -> {}
-                                }
-                            }
+                            )
                         }
 
-                        RegistrationScreen(
-                            onBack = { navController.popBackStack() },
-                            onRegister = { email, password ->
-                                viewModel.updateEmail(email)
-                                viewModel.updatePassword(password)
-                                viewModel.updateConfirmPassword(password)
+                        composable(Route.GettingStarted.route) {
+                            GettingStartedScreen(
+                                onRegistrationClick = { navController.navigate(Route.Registration1.route) },
+                                onAuthorizationClick = { navController.navigate(Route.Autorization.route) }
+                            )
+                        }
 
-                                scope.launch {
-                                    viewModel.registerStep1()
-                                }
-                            },
-                            sessionManager = sessionManager
-                        )
-                    }
+                        composable(Route.Autorization.route) {
+                            val authViewModel: AuthViewModel = viewModel(
+                                factory = AuthViewModelFactory(authRepository, sessionManager)
+                            )
 
+                            AuthorizationScreen(
+                                onAuthorization = { navController.navigate(Route.HomeScreen.route) },
+                                onRegistration = { navController.navigate(Route.Registration1.route) },
+                                authViewModel = authViewModel
+                            )
+                        }
 
-                    composable(
-                        route = "${Route.Registration2.route}/{email}",
-                        arguments = listOf(
-                            navArgument("email") {
-                                type = NavType.StringType
-                                defaultValue = ""
-                            }
-                        )
-                    ) { backStackEntry ->
-                        val email = backStackEntry.arguments?.getString("email") ?: ""
-                        val detailsViewModel: RegistrationDetailsViewModel = viewModel(
-                            factory = RegistrationDetailsViewModelFactory(authRepository, sessionManager)
-                        )
+                        composable(Route.Registration1.route) {
+                            val viewModel: RegistrationViewModel = viewModel(
+                                factory = RegistrationViewModelFactory(authRepository, sessionManager)
+                            )
+                            val scope = rememberCoroutineScope()
 
-                        RegistrationDetailsScreen(
-                            email = email,
-                            onBack = { navController.popBackStack() },
-                            onRegistrationCont = {
-                                navController.navigate("${Route.Registration3.route}/$email")
-                            },
-                            authRepository = authRepository,
-                            detailsViewModel = detailsViewModel
-                        )
-                    }
-
-
-                    composable(
-                        route = "${Route.Registration3.route}/{email}",
-                        arguments = listOf(
-                            navArgument("email") {
-                                type = NavType.StringType
-                                defaultValue = ""
-                            }
-                        )
-                    ) { backStackEntry ->
-                        val email = backStackEntry.arguments?.getString("email") ?: ""
-                        val uploadViewModel: DocumentUploadViewModel = viewModel(
-                            factory = DocumentUploadViewModelFactory(authRepository, sessionManager)
-                        )
-                        val scope = rememberCoroutineScope()
-
-                        println("DEBUG Registration3: Email from route: '$email'")
-
-                        LaunchedEffect(uploadViewModel.registrationResult) {
-                            uploadViewModel.registrationResult.collect { result ->
-                                when (result) {
-                                    is RegistrationResult.Success -> {
-                                        println("DEBUG Registration3: Registration SUCCESS")
-                                        navController.navigate(Route.Congaratulation.route) {
-                                            popUpTo(Route.Registration3.route) { inclusive = true }
+                            LaunchedEffect(viewModel.registrationResult) {
+                                viewModel.registrationResult.collect { result ->
+                                    when (result) {
+                                        is RegistrationResult.Success -> {
+                                            val email = viewModel.registrationState.value.email
+                                            println("DEBUG Registration1: Navigating with email: $email")
+                                            navController.navigate(Route.Registration2.createRoute(email))
                                         }
+                                        is RegistrationResult.Error -> {}
+                                        null -> {}
                                     }
-                                    is RegistrationResult.Error -> {
-                                        println("DEBUG Registration3: Registration FAILED: ${result.message}")
-                                    }
-                                    null -> {}
                                 }
                             }
+
+                            RegistrationScreen(
+                                onBack = { navController.popBackStack() },
+                                onRegister = { email, password ->
+                                    viewModel.updateEmail(email)
+                                    viewModel.updatePassword(password)
+                                    viewModel.updateConfirmPassword(password)
+
+                                    scope.launch {
+                                        viewModel.registerStep1()
+                                    }
+                                },
+                                sessionManager = sessionManager
+                            )
                         }
 
-                        DocumentUploadScreen(
-                            email = email,
-                            onBack = { navController.popBackStack() },
-                            onRegistrationComplete = {
-                                scope.launch {
-                                    uploadViewModel.completeRegistration(email)
+                        composable(
+                            route = "${Route.Registration2.route}/{email}",
+                            arguments = listOf(
+                                navArgument("email") {
+                                    type = NavType.StringType
+                                    defaultValue = ""
                                 }
-                            },
-                            sessionManager = sessionManager
-                        )
-                    }
-                    composable(Route.Congaratulation.route) {
-                        CongratulationScreen(
-                            onClick = {
-                                navController.navigate(Route.HomeScreen.route) {
-                                    popUpTo(0)
+                            )
+                        ) { backStackEntry ->
+                            val email = backStackEntry.arguments?.getString("email") ?: ""
+                            val detailsViewModel: RegistrationDetailsViewModel = viewModel(
+                                factory = RegistrationDetailsViewModelFactory(authRepository, sessionManager)
+                            )
+
+                            RegistrationDetailsScreen(
+                                email = email,
+                                onBack = { navController.popBackStack() },
+                                onRegistrationCont = {
+                                    navController.navigate("${Route.Registration3.route}/$email")
+                                },
+                                authRepository = authRepository,
+                                detailsViewModel = detailsViewModel
+                            )
+                        }
+
+                        composable(
+                            route = "${Route.Registration3.route}/{email}",
+                            arguments = listOf(
+                                navArgument("email") {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val email = backStackEntry.arguments?.getString("email") ?: ""
+                            val uploadViewModel: DocumentUploadViewModel = viewModel(
+                                factory = DocumentUploadViewModelFactory(authRepository, sessionManager)
+                            )
+                            val scope = rememberCoroutineScope()
+
+                            println("DEBUG Registration3: Email from route: '$email'")
+
+                            LaunchedEffect(uploadViewModel.registrationResult) {
+                                uploadViewModel.registrationResult.collect { result ->
+                                    when (result) {
+                                        is RegistrationResult.Success -> {
+                                            println("DEBUG Registration3: Registration SUCCESS")
+                                            navController.navigate(Route.Congaratulation.route) {
+                                                popUpTo(Route.Registration3.route) { inclusive = true }
+                                            }
+                                        }
+                                        is RegistrationResult.Error -> {
+                                            println("DEBUG Registration3: Registration FAILED: ${result.message}")
+                                        }
+                                        null -> {}
+                                    }
                                 }
                             }
-                        )
-                    }
 
-                    composable(Route.HomeScreen.route) {
-                        HomeScreen()
-                    }
+                            DocumentUploadScreen(
+                                email = email,
+                                onBack = { navController.popBackStack() },
+                                onRegistrationComplete = {
+                                    scope.launch {
+                                        uploadViewModel.completeRegistration(email)
+                                    }
+                                },
+                                sessionManager = sessionManager
+                            )
+                        }
 
-                    composable(Route.NoInternet.route) {
-                        NoInternetScreen(
-                            onRetry = {
-                                if (isOnline) {
+                        composable(Route.Congaratulation.route) {
+                            CongratulationScreen(
+                                onClick = {
+                                    navController.navigate(Route.HomeScreen.route) {
+                                        popUpTo(0)
+                                    }
+                                }
+                            )
+                        }
+
+                        composable(Route.HomeScreen.route) {
+                            HomeScreen(
+                                onBookCar = { car ->
+                                },
+                                onCarDetails = { car ->
+                                },
+                                onSearchResults = { query ->
+                                    navController.navigate("${Route.SearchResultScreen.route}?query=$query")
+                                }
+                            )
+                        }
+
+                        composable(
+                            route = "${Route.SearchResultScreen.route}?query={query}",
+                            arguments = listOf(
+                                navArgument("query") {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val query = backStackEntry.arguments?.getString("query") ?: ""
+                            val decodedQuery = URLDecoder.decode(query, "UTF-8")
+
+                            SearchResultsScreen(
+                                searchQuery = decodedQuery,
+                                onBackClick = {
                                     navController.popBackStack()
-                                    if (navController.currentBackStackEntry == null) {
-                                        if (appPreferences.isFirstLaunch) {
-                                            navController.navigate(Route.Greetings.route)
-                                        } else {
-                                            navController.navigate(Route.Autorization.route)
+                                },
+                                onBookCar = { car ->
+                                },
+                                onCarDetails = { car ->
+                                }
+                            )
+                        }
+
+                        composable(Route.SettingsScreen.route) {
+
+                            val settingsViewModel: SettingsViewModel = viewModel(
+                                factory = SettingsViewModelFactory(authRepository)
+                            )
+                            SettingsScreen(
+                                viewModel = settingsViewModel,
+                                onProfileClick = {
+                                    navController.navigate(Route.ProfileScreen.route)
+                                },
+                                onBookingsClick = {
+
+                                },
+                                onThemeClick = {
+
+                                },
+                                onNotificationsClick = {
+
+                                },
+                                onAddCarClick = {
+
+                                },
+                                onHelpClick = {
+
+                                },
+                                onReferralClick = {
+
+                                }
+                            )
+                        }
+
+                        composable(Route.ProfileScreen.route) {
+                            val coroutineScope = rememberCoroutineScope()
+
+
+                            val profileViewModel: ProfileViewModel = viewModel(
+                                factory = ProfileViewModelFactory(authRepository)
+                            )
+
+                            ProfileScreen(
+                                viewModel = profileViewModel,
+                                onLogOut = {
+                                    coroutineScope.launch {
+                                        sessionManager.clearAuthData()
+                                        authRepository.logout()
+
+                                        navController.navigate(Route.Autorization.route) {
+                                            popUpTo(0)
                                         }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
+
+                        composable(Route.FavouriteScreen.route){
+                            FavouriteScreen()
+                        }
+
+                        composable(Route.NoInternet.route) {
+                            NoInternetScreen(
+                                onRetry = {
+                                    if (isOnline) {
+                                        navController.popBackStack()
+                                        if (navController.currentBackStackEntry == null) {
+                                            if (appPreferences.isFirstLaunch) {
+                                                navController.navigate(Route.Greetings.route)
+                                            } else {
+                                                navController.navigate(Route.Autorization.route)
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

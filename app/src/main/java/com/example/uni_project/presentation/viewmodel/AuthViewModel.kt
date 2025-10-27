@@ -28,7 +28,6 @@ class AuthViewModel(
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
-    // Заменяем на SharedFlow для событий
     private val _googleSignInEvent = MutableSharedFlow<GoogleSignInEvent>()
     val googleSignInEvent: SharedFlow<GoogleSignInEvent> = _googleSignInEvent.asSharedFlow()
 
@@ -137,8 +136,10 @@ class AuthViewModel(
                 )
             }
         }
+
     }
     private fun saveLoginData(email: String) {
+
 
     }
 }

@@ -25,7 +25,7 @@ fun rememberGalleryAccess(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Toast.makeText(context, "Не удалось загрузить изображение", Toast.LENGTH_SHORT).show()
+
             }
         }
     }

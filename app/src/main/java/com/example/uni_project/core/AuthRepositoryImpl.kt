@@ -24,7 +24,7 @@ class AuthRepositoryImpl(
     // Аутентификация
     override suspend fun login(email: String, password: String): LoginResult {
         return try {
-            println("🟡 DEBUG login: Attempting login for email: $email")
+            println("DEBUG login: Attempting login for email: $email")
             val user = database.userDao().getUserByEmail(email)
 
             if (user != null && user.password == password.hashCode().toString()) {
@@ -56,8 +56,8 @@ class AuthRepositoryImpl(
             sessionManager.saveAuthToken(user.token)
             _currentUser = user
 
-            println("🟢 DEBUG loginWithGoogle: Google login successful, token saved: ${user.token}")
-            println("🟢 DEBUG loginWithGoogle: User details - email: ${user.email}, name: ${user.firstName} ${user.lastName}")
+            println(" DEBUG loginWithGoogle: Google login successful, token saved: ${user.token}")
+            println("DEBUG loginWithGoogle: User details - email: ${user.email}, name: ${user.firstName} ${user.lastName}")
 
             LoginResult(success = true, token = user.token)
         } catch (e: Exception) {

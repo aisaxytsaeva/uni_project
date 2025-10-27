@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uni_project.R
 import com.example.uni_project.presentation.viewmodel.OnboardingViewModel
-import com.example.uni_project.presentation.screens.components.OnboardingSlideItem
+import com.example.uni_project.presentation.components.OnboardingSlideItem
 import com.example.uni_project.ui.theme.Purple
 
 @Composable
@@ -79,7 +79,7 @@ fun Greetings(
             }
         }
         LinearProgressIndicator(
-            progress = { (currentPage + 1).toFloat() / viewModel.slides.size },
+            progress =  (currentPage + 1).toFloat() / viewModel.slides.size ,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(bottom = 100.dp, start = 32.dp, end = 32.dp)

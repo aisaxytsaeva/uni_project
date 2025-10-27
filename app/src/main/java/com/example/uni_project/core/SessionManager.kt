@@ -67,7 +67,7 @@ class SessionManager(private val context: Context) {
             remove(KEY_USER_EMAIL)
             apply()
         }
-        println("🟢 DEBUG SessionManager: All auth data cleared")
+        println("DEBUG SessionManager: All auth data cleared")
     }
 
 

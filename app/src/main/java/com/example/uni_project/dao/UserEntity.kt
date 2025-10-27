@@ -29,53 +29,9 @@ data class UserEntity(
     val registrationStep: Int = 0,
     val registrationCompleted: Boolean = false,
     val documentsUploaded: Boolean = false
-) {
-    fun toUser(): User {
-        return User(
-            email = email,
-            password = password,
-            firstName = firstName,
-            lastName = lastName,
-            middleName = middleName,
-            birthDate = birthDate,
-            gender = gender,
-            profilePhotoUri = profilePhotoUri,
-            driverLicenseNumber = driverLicenseNumber,
-            driverLicenseIssueDate = driverLicenseIssueDate,
-            driverLicensePhotoUri = driverLicensePhotoUri,
-            passportPhotoUri = passportPhotoUri,
-            authProvider = authProvider,
-            createdAt = createdAt,
-            lastLogin = lastLogin,
-            registrationStep = registrationStep,
-            registrationCompleted = registrationCompleted,
-            documentsUploaded = documentsUploaded
-        )
-    }
-}
-
-data class User(
-    val email: String,
-    val password: String?,
-    val firstName: String,
-    val lastName: String,
-    val middleName: String,
-    val birthDate: String,
-    val gender: Gender,
-    val profilePhotoUri: String?,
-    val driverLicenseNumber: String,
-    val driverLicenseIssueDate: String,
-    val driverLicensePhotoUri: String?,
-    val passportPhotoUri: String?,
-    val authProvider: AuthProvider,
-    val createdAt: Long,
-    val lastLogin: Long,
-    val registrationStep: Int,
-    val registrationCompleted: Boolean,
-    val documentsUploaded: Boolean
 )
 
 enum class AuthProvider {
-    LOCAL,    // Обычная регистрация
-    GOOGLE    // Через Google
+    LOCAL,
+    GOOGLE
 }

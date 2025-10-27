@@ -1,9 +1,6 @@
 package com.example.uni_project.core
 
-import androidx.navigation.NavBackStackEntry
 import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
-import java.net.URLEncoder
 
 
 sealed interface Route {
@@ -59,11 +56,23 @@ sealed interface Route {
     data object HomeScreen: Route {
         override val route: String = "HomeScreen"
     }
-}
-fun Route.Registration2.withEmail(email: String): String {
-    return "Registration2?email=${URLEncoder.encode(email, "UTF-8")}"
-}
+    @Serializable
+    data object SettingsScreen: Route {
+        override val route: String = "SettingsScreen"
+    }
 
-fun Route.Registration2.getEmail(backStackEntry: NavBackStackEntry): String {
-    return backStackEntry.arguments?.getString("email") ?: ""
+    @Serializable
+    data object ProfileScreen: Route{
+        override val route: String = "ProfileScreen"
+    }
+
+    @Serializable
+    data object SearchResultScreen: Route{
+        override val route: String = "SearchResultScreen"
+    }
+
+    @Serializable
+    data object FavouriteScreen: Route{
+        override val route: String = "FavouriteScreen"
+    }
 }

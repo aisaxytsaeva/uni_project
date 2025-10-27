@@ -1,4 +1,4 @@
-package com.example.uni_project.presentation.screens.components
+package com.example.uni_project.presentation.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -30,7 +30,7 @@ fun OnboardingSlideItem(
     ) {
         Image(
             painter = painterResource(slide.imageRes),
-            contentDescription = null,
+            contentDescription = "OnBoardingSlideImage",
             modifier = Modifier
                 .size(width = 600.dp, height = 400.dp),
             contentScale = ContentScale.Fit

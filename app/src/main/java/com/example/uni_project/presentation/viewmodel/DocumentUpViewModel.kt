@@ -27,7 +27,7 @@ class DocumentUploadViewModel(
     // Проверка готовности формы
     val isFormValid: Boolean
         get() = _state.value.driverLicenseNumber.isNotBlank() &&
-                _state.value.driverLicenseIssueDate.length == 8 && // 8 цифр для DDMMYYYY
+                _state.value.driverLicenseIssueDate.length == 8 &&
                 _state.value.driverLicensePhotoUri != null &&
                 _state.value.passportPhotoUri != null &&
                 isIssueDateValid(_state.value.driverLicenseIssueDate)
@@ -40,7 +40,7 @@ class DocumentUploadViewModel(
             val month = date.substring(2, 4).toInt()
             val year = date.substring(4, 8).toInt()
 
-            // Базовая проверка
+
             day in 1..31 && month in 1..12 && year in 1900..2025
         } catch (e: Exception) {
             false
@@ -196,7 +196,7 @@ class DocumentUploadViewModel(
     private fun validateForm(): Map<String, String?> {
         val errors = mutableMapOf<String, String?>()
 
-        // Валидация номера водительского удостоверения
+
         when {
             _state.value.driverLicenseNumber.isBlank() -> {
                 errors["driverLicense"] = "Номер водительского удостоверения обязателен"
@@ -209,7 +209,7 @@ class DocumentUploadViewModel(
             }
         }
 
-        // Валидация даты выдачи
+
         when {
             _state.value.driverLicenseIssueDate.isBlank() -> {
                 errors["issueDate"] = "Дата выдачи обязательна"
@@ -222,7 +222,7 @@ class DocumentUploadViewModel(
             }
         }
 
-        // Валидация фото документов
+
         if (_state.value.driverLicensePhotoUri == null) {
             errors["driverLicensePhoto"] = "Загрузите фото водительского удостоверения"
         }
@@ -234,28 +234,11 @@ class DocumentUploadViewModel(
         return errors
     }
 
-    // Функция для форматирования даты для отображения
-    private fun formatDateForDisplay(date: String): String {
-        return if (date.length == 8) {
-            "${date.substring(0, 2)}.${date.substring(2, 4)}.${date.substring(4, 8)}"
-        } else {
-            date
-        }
-    }
+
 
     fun clearRegistrationResult() {
         _registrationResult.value = null
     }
 
-    // Дополнительный метод для проверки состояния
-    fun getFormValidationStatus(): String {
-        return """
-            Form Validation Status:
-            - Driver License: ${_state.value.driverLicenseNumber.isNotBlank()} (${_state.value.driverLicenseNumber})
-            - Issue Date: ${_state.value.driverLicenseIssueDate.length == 8} (${_state.value.driverLicenseIssueDate})
-            - License Photo: ${_state.value.driverLicensePhotoUri != null}
-            - Passport Photo: ${_state.value.passportPhotoUri != null}
-            - Overall Valid: $isFormValid
-        """.trimIndent()
-    }
+
 }

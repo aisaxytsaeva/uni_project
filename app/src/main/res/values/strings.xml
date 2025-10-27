@@ -60,6 +60,25 @@
 
 
 
+    //settings
+    <string name="settings">Настройки</string>
+    <string name="bookings">Мои бронирования</string>
+    <string name="theme">Тема</string>
+    <string name="notifications">Уведомления</string>
+    <string name="help">Подключить свой автомобиль</string>
+    <string name="your_auto">Помощь</string>
+    <string name="friend">Пригласи друга</string>
+
+    //profile
+    <string name="profile">Профиль</string>
+    <string name="google_mail">Google</string>
+    <string name="log_out">Выйти из профиля</string>
+    <string name="pass_change">Поменять пароль</string>
+
+    //home
+    <string name="details">Детали</string>
+    <string name="book">Забронировать</string>
+
     //common
     <string name="cont">Далее</string>
     <string name="mail">Электронная почта</string>
@@ -68,5 +87,6 @@
     <string name="password_sign">Введите пароль</string>
     <string name="autorization">Войти</string>
     <string name="registration">Зарегистрироваться</string>
+
 
 </resources>
